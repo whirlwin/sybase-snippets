@@ -10,13 +10,12 @@ Useful queries in Sybase used for monitoring.
 
 #### Alternative #1, using `systabstats`:
 ```sql
-USE {{db_name}}
-sp_flushstats systabstats
-SELECT db_name() AS db_name, so.name AS table_name, CONVERT(VARCHAR,CONVERT(INT,sts.rowcnt)) AS estimated_row_count
+SELECT LOWER(so.name) as table_name, sum(sts.rowcnt) AS estimated_rowcount_total
 FROM sysobjects so
     LEFT OUTER JOIN systabstats sts
     ON so.id = sts.id AND sts.indid IN (0,1)
 WHERE so.type='U'
+GROUP BY so.name
 ```
 
 #### Alternative #2, using `sysobjects`:
